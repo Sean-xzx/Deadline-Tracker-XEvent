@@ -2,111 +2,71 @@
 
 # Deadline Tracker - XEvent
 
-A local Windows desktop workspace for important matters, deadlines, plans and follow-up notes.
+**A Windows desktop workspace that connects important deadlines with plans, progress and the next follow-up.**
 
-XEvent is a personal project for keeping study, work and life commitments together. The interface is currently in Simplified Chinese. Application version: **1.0.2**; JSON data format version: **1**.
+## Value
 
-**All rights reserved.** This repository is publicly visible for review; it is not open source. Running, building, modifying (including changing functionality), reusing or redistributing project-owned materials requires the owner's prior written permission, except where applicable law or GitHub's platform terms provide otherwise. The instructions below document owner-authorized setup and verification; they do not grant permission. See [RIGHTS](RIGHTS.md).
+An application, project or major life commitment needs more than a due date: it also needs a plan, a record of what has changed, and a clear next action. XEvent keeps these together so a user can see **what needs attention, how far it has progressed, and what to do next**.
+
+Built for personal study, work and life planning, it combines independent deadline/follow-up times, goals, strategy, checklist progress and Markdown notes. Cards, a list, a status board and a deadline timeline provide different views of the same matters. Data stays local; routine use needs no account or network connection. This is a single-user application without cloud synchronization or collaboration.
+
+## My contribution — Sean-xzx
+
+I initiated and directed this personal project, using **AI assistance for implementation, testing and repository preparation**. My contribution focused on:
+
+- **Requirements and product decisions:** defined the mixed study/work/life use case and the need to connect deadlines with follow-up, progress and next actions.
+- **Interface review and iteration:** reviewed the running application, identified an incomplete sidebar and excessive motivational copy, and directed revisions toward clearer hierarchy and a restrained interface.
+- **Delivery requirements:** drove the work toward a runnable Windows EXE, recoverable local data, bilingual documentation and verification from a clean repository copy.
+
+These contributions demonstrate requirements analysis, interface evaluation and delivery judgment. The code and validation below show the resulting implementation; this is not a claim of independently hand-writing every component.
+
+## Engineering approach
+
+- **Separate deadline from follow-up.** A matter can require follow-up without having a deadline. Shared rules rank overdue, due-for-follow-up and approaching-deadline matters; persisted notification keys prevent repeated reminders for the same trigger. See [domain rules](app/domain.cjs).
+- **Share rules across runtime boundaries.** The renderer and Electron main process use the same validation/progress logic. A restricted preload API connects the UI to desktop operations; Markdown is parsed with Marked and sanitized with DOMPurify. The browser preview uses a separate localStorage adapter. See [architecture and file map](docs/architecture.md).
+- **Make local data recoverable.** JSON saves write a temporary file before renaming; up to 14 backups are retained. Imports are validated, then merged by ID and newer update time while retaining local preferences. Completion/reopening and trash/restore preserve the matter's records. See [storage](app/store.cjs).
+
+These are practical design choices for this product; no novel algorithm or research finding is claimed.
+
+## Demonstrated results
+
+| Evidence | What it establishes |
+| --- | --- |
+| Real Electron screenshot below | The desktop UI renders the built-in synthetic matters |
+| **15 passing automated tests** | Domain rules, persistence, backups and IPC handling; OS APIs are mocked in main-process tests |
+| **Passing real desktop smoke test** | Renderer, preload, IPC and disk persistence work together through create/update/trash/restore, invalid-date rejection and page reload |
+| **Successful Windows x64 portable build from a clean remote clone** | The documented dependency/build workflow produces `release/XEvent-1.0.2.exe` |
+
+The tested source commit `98929fd` also has a [successful Windows CI run](https://github.com/Sean-xzx/Deadline-Tracker-XEvent/actions/runs/37738822673). [Validation details](docs/validation.md) distinguish automated evidence from manual checks.
 
 ![Real Electron desktop with synthetic example matters](docs/images/overview.png)
 
-This screenshot comes from the real Electron application running the built-in synthetic examples. Dates are relative to the day examples are loaded; UUIDs and timestamps change between runs.
+The six examples include five unfinished matters and one completed matter. Dates, IDs and timestamps vary by run. These are functional/build results; no user study or measured productivity improvement is claimed. Native notification delivery, login startup and tray interactions still require manual verification.
 
-## Features and scope
+## Run and verify
 
-- Separate deadline and follow-up time; priorities, starred matters, goals, strategy and next actions.
-- Checklist stages with progress; editable Markdown follow-up notes and HTTP/HTTPS resource links.
-- Cards, list, status board with drag and drop, and deadline timeline; categories, search and sorting.
-- Completion/reopening, recoverable trash, light/dark/system theme and keyboard shortcuts.
-- Local JSON storage, automatic backups and manual export/import with merge by ID and newer update time.
-- Windows notifications for follow-up, approaching deadlines, overdue matters and daily summaries; snooze and tray residency; optional login startup in the packaged EXE.
+Version **1.0.2**, data format **1**, Simplified Chinese UI. Verified on **Windows 11 Home x64 (build 26200), Node.js 22.23.2, npm 10.9.8 and Electron 44.5.1**. Dependencies require Node >=22.12.0; other development Node versions are unverified.
 
-This is a single-user desktop application. It has no cloud synchronization, collaboration service, accounts or server database. Once installed/built, managing local matters needs no network connection. Opening an external resource link can use the network.
+Setup needs Git and network access to npm, Electron and packaging downloads; no private project credentials, external dataset, model or paid service is required. Installation/build output occupies hundreds of MB and a fresh build can take several minutes. EXE users do not need Node.js. These instructions document owner-authorized use; they do not grant permission. See [rights](RIGHTS.md).
 
-## Requirements
-
-- **Verified locally:** Windows 11 Home x64, build 26200; Node.js **22.23.2**, npm **10.9.8**, Electron **44.5.1**. Electron's embedded Node is separate from the development Node version.
-- For development, use Node.js **22.23.2** with npm; dependencies require Node >=22.12.0. Other Node versions and Windows 10 have not been verified here. Linux/macOS desktop operation and packaging are unverified.
-- Git and network access to npm, Electron downloads and packaging tools are needed for a fresh install/build. No project API key, paid service, model, external dataset or signing certificate is required.
-- Use Windows x64 for the documented portable build. The EXE user does not need Node.js. Dependencies/build output occupy hundreds of MB; a fresh package build can take several minutes.
-
-## Quick start
-
-Run the following in PowerShell:
+In PowerShell:
 
 ```powershell
 git clone https://github.com/Sean-xzx/Deadline-Tracker-XEvent.git
 cd Deadline-Tracker-XEvent
-node --version
 npm ci
 node node_modules/electron/install.js
 npm test
 npm start
 ```
 
-Expected: 15 tests pass, then a window titled `XEvent · 重大事项` opens. A new data profile starts empty. Click `新建事项` to create a matter, or `载入示例` to load six synthetic examples. An existing local profile retains its own contents.
+**Success:** 15 tests pass and a window titled `XEvent · 重大事项` opens. A new desktop profile starts empty; existing local data is retained. Select `载入示例` to see six synthetic matters: five in the overview and one under `已完成`. For a minimal editing example, create a matter with separate deadline/follow-up times and two checklist stages; marking one stage done yields **50% progress**.
 
-For a separate browser preview:
+For browser preview, run `npm run build:ui`, then `npm run preview` and open [localhost:4173](http://127.0.0.1:4173). A fresh browser profile loads the examples automatically; Ctrl+C stops the server. Browser data is separate and Windows notification/tray/login integration is unavailable.
 
-```powershell
-npm run build:ui
-npm run preview
-```
-
-Open [http://127.0.0.1:4173](http://127.0.0.1:4173). A fresh browser profile automatically contains the six examples. Stop the preview with Ctrl+C. This preview has its own localStorage data and does not provide Windows notifications, tray integration or login startup; it is not a substitute for desktop validation.
-
-## Representative workflow
-
-1. In an empty desktop profile, choose `载入示例`: expect **six stored matters**, **five unfinished** on the overview, and **one completed** under `已完成`.
-2. Create `Submit application`, category `学业`, with a deadline and a separate follow-up time. Set the next action to `Review the materials` and add two checklist stages, one marked `[x]`. Expect **50%** stage progress.
-3. Add a Markdown note, edit it, and switch between cards/list/board/timeline. Marking the matter complete moves it to `已完成`; `重新开始` makes it active again.
-4. Move a matter to `回收站`, then restore it. Its notes and stages remain. In settings, export JSON; importing it again merges by ID rather than creating duplicates. Current preferences are preserved.
-5. Exit using the tray menu, restart, and confirm the data remains. To check actual OS delivery, enable notifications and use `发送测试通知` in settings. Windows notification/Do Not Disturb settings affect delivery.
-
-Shortcuts: Ctrl+N creates a matter; Ctrl+K searches; Ctrl+Enter saves the active editor/note; Esc closes a dialog. The automated example below uses an isolated temporary profile and does not edit your normal data.
-
-## Configuration and resources
-
-No `.env` file is required. Preferences are edited in the UI and saved with the data. Defaults are light theme, notifications enabled, close to tray enabled, login startup disabled, daily summary at 09:00 and three days' deadline lead time.
-
-- Normal desktop data: `%APPDATA%/XEvent/events.json`; backups: the adjacent `backups/` directory. Use settings to open the actual data directory.
-- `XEVENT_DATA_DIR` overrides the data directory for isolated development/testing and skips packaged Windows shortcut registration. Set it before launching; remove it afterwards. For example:
-
-  ```powershell
-  $env:XEVENT_DATA_DIR = Join-Path $env:TEMP 'xevent-dev-profile'
-  npm start
-  Remove-Item Env:XEVENT_DATA_DIR
-  ```
-
-- Browser keys: `xevent-browser-preview-v1` (data), `xevent-ui-v1` (view selection). Browser and desktop data are independent.
-- Existing files are backed up on the first applicable save per Store instance/UTC day and before imports; the newest **14** backups are kept. Saves write a temporary JSON file then rename it. JSON exports include completed and trashed matters and are **not encrypted**.
-- Imports accept format version 1, at most 10,000 matters and a 20 MB file; malformed dates and duplicate IDs are rejected. Invalid startup data is left intact and reported rather than overwritten.
-- Examples are generated by `sampleEvents()`; all examples and screenshots are synthetic. There are no extra datasets or models to download. UUIDs, dates, compression and environment differences mean EXE hashes/screenshots are not promised to be identical across builds.
-
-## Structure and architecture
-
-| Path | Responsibility |
-| --- | --- |
-| `src/renderer.js` | UI source, editing, filtering, views; browser-preview adapter |
-| `app/main.cjs` | Desktop entry: window, IPC, notifications, tray, import/export and login integration |
-| `app/preload.cjs` | Restricted API exposed as `window.xevent` |
-| `app/domain.cjs` | Shared validation, progress, sorting, reminder rules and examples |
-| `app/store.cjs` | JSON persistence and backup retention |
-| `app/index.html`, `styles.css`, `design.css` | Document, base layout and current visual layer; both stylesheets are required |
-| `assets/` | Original SVG icon and small generated PNG/ICO assets |
-| `scripts/` | UI/icon builds, browser preview and repository/desktop checks |
-| `tests/` | Domain/storage tests and main-process IPC tests with mocked OS boundaries |
-| `docs/` | Architecture, validation details and a real synthetic-data screenshot |
-| `.github/workflows/verify.yml` | Windows dependency installation, checks, desktop smoke and portable build |
-
-The renderer calls the preload API; the main process validates requests, applies shared domain rules, saves through Store and broadcasts fresh snapshots back to the UI. The reminder timer reads the same stored matters and records notification deduplication keys. Browser preview replaces the desktop API with localStorage operations. See [module relationships and file map](docs/architecture.md).
-
-`app/bundle.js` and `app/assets/icon.svg` are generated by `build:ui`. `node_modules/`, `release/`, local EXEs, test profiles, caches, private reports and backups are excluded. Existing local historical outputs are preserved outside version control; reproduce a current EXE with the command below.
-
-## Tests and packaging
+After setup, verify resources and build the portable EXE:
 
 ```powershell
-npm test
 npm run build:ui
 npm run icons
 node scripts/check-repository.cjs
@@ -114,24 +74,22 @@ npx --no-install electron scripts/smoke-desktop.cjs
 npm run dist
 ```
 
-Expected: 15 passing tests; a successful repository-check message; desktop smoke JSON containing `"passed":true`; and **`release/XEvent-1.0.2.exe`**. Double-click that portable EXE. Smoke reports/screenshots are written under `artifacts/desktop-smoke/`; all smoke data uses a new OS temporary profile. Third-party notices are included under `app/` in the packaged application.
+**Success:** repository checks pass, the smoke report contains `"passed":true`, and `release/XEvent-1.0.2.exe` is generated. Double-click the EXE to open it. The smoke uses an isolated temporary profile and writes reports/screenshots to `artifacts/desktop-smoke/`. [GitHub Actions](https://github.com/Sean-xzx/Deadline-Tracker-XEvent/actions) runs these checks on pushes and pull requests.
 
-The existing tests check persistence, backups, reminder deduplication, date errors, input restrictions and IPC operations. OS window/dialog/notification/login APIs are mocked in `tests/main.test.cjs`. The separate desktop smoke runs the actual renderer, preload and IPC with real files. It does **not** prove native notification delivery, login startup or tray clicks. [Evidence, manual checks and limitations](docs/validation.md) distinguish these levels. [GitHub Actions](https://github.com/Sean-xzx/Deadline-Tracker-XEvent/actions) runs the automated sequence on pushes and pull requests; a passing badge must be assessed against the actual run.
+## Data, implementation and limitations
 
-## Troubleshooting and project status
+No `.env` is needed. Settings control theme, reminders, tray residency and optional packaged-EXE login startup. Defaults are light theme, notifications and close-to-tray enabled, login startup disabled, a 09:00 daily summary and three days' deadline lead time. Desktop data is in `%APPDATA%/XEvent/events.json`; settings can open the actual directory and export/import backups. Exports include completed/trashed matters and are **not encrypted**. `XEVENT_DATA_DIR` selects an isolated test directory and skips packaged Windows shortcut registration; set it before launching and remove it afterwards.
 
-- **Dependency download fails:** check access to npm/Electron download hosts and your proxy. Retry `npm ci`. Do not commit personal proxy credentials or replace the lockfile merely to bypass a network problem. An offline clean install is not promised.
-- **Dependency audit (2026-10-08):** npm reported eight moderate findings in the electron-builder dependency chain, rooted in `sprintf-js`. No high/critical findings were reported in that audit. The existing dependency versions/lockfile were preserved; this preparation is not a dependency security upgrade. Review `npm audit` before changing that toolchain.
-- **Preview cannot connect or is stale:** build the UI first; verify port 4173 is free and keep the preview command running. Browser example dates reflect when that browser profile first loaded them.
-- **Notifications are absent:** keep the program running, check Windows notification/Do Not Disturb settings and try the settings test button. Exit, shutdown and sleep prevent timely reminders.
-- **Cannot reopen after disabling close-to-tray:** a source-level lifecycle limitation can leave the tray alive with a destroyed window. Keep the default close-to-tray setting and fully quit through the tray menu. This branch does not change the core implementation to fix that issue.
-- **Login startup:** available only in a packaged EXE. After moving the EXE, disable then re-enable it to update the stored path. Actual login behavior remains a manual validation item.
-- **Distribution:** builds are unsigned; no code-signing certificate or automatic updater is configured. SmartScreen acceptance is not verified. Windows 10, Linux/macOS and alternative architectures are not claimed as tested.
+The entry point is `app/main.cjs`. UI source `src/renderer.js` calls `app/preload.cjs`; the main process validates requests through `app/domain.cjs`, persists them through `app/store.cjs`, then broadcasts snapshots to the UI. `build:ui` generates the renderer bundle. Both `app/styles.css` and `app/design.css` are required. Dependencies, build output, private data, caches and backups are excluded from Git.
 
-This is a personal project with no maintenance SLA or promised release schedule. No standing authorization is provided for code contributions or functional changes. Request the owner's written permission through [Issues](https://github.com/Sean-xzx/Deadline-Tracker-XEvent/issues) before any use requiring authorization. Authorized developers must keep both READMEs synchronized and attach relevant validation. Bug reports should state OS, Node/Electron version, steps and expected/actual behavior; use synthetic data and never upload real `events.json` files or credentials.
+- **OS integration:** reminders need the app running; shutdown, sleep and Windows notification settings affect delivery. Disabling close-to-tray can leave a tray with a destroyed window and prevent reopening; retain the default and fully quit via the tray menu. Moving a packaged EXE requires toggling login startup off/on to update its path.
+- **Compatibility/distribution:** Windows 10, macOS/Linux, alternative architectures, other Node versions and SmartScreen are unverified. Builds are unsigned and have no automatic updater.
+- **Dependencies:** the 2026-10-08 audit reported eight moderate findings in the electron-builder chain via `sprintf-js`, with no high/critical findings. The original lockfile is retained. For failed downloads, check network/proxy access; offline clean installation is not promised.
 
-## License and acknowledgements
+Further reading: [architecture and each file's role](docs/architecture.md), [verification commands and manual checks](docs/validation.md), [Chinese user guide](使用说明.md). This personal project has no maintenance SLA or promised release schedule. Report issues with versions, reproduction steps and synthetic data through [Issues](https://github.com/Sean-xzx/Deadline-Tracker-XEvent/issues); do not upload personal records or credentials. Code contributions and functional modifications require prior written permission.
 
-Copyright (c) 2026 Sean-xzx. **All rights reserved. No open-source license is granted.** Public visibility permits review under GitHub's terms; it does not grant additional permission to use, build, modify functionality, reuse or redistribute the project's own materials. Obtain prior written permission from the owner. See the bilingual [rights notice](RIGHTS.md), including the public-repository view/fork boundary and independent third-party terms.
+## Rights and resource sources
 
-The XEvent SVG icon is project-authored; PNG/ICO files are generated from it. Screenshots contain project-generated examples. Electron, electron-builder, esbuild, sharp, Lucide (including Feather-derived icons), Marked and DOMPurify are third-party dependencies. Exact bundled-library and direct-tool license texts and source references are retained in [THIRD_PARTY_NOTICES](app/THIRD_PARTY_NOTICES.txt); DOMPurify uses its Apache-2.0 option. Electron includes its Chromium notices in desktop distributions. Dependency licensing remains separate from the project's license.
+Copyright (c) 2026 Sean-xzx. **All rights reserved; no open-source license is granted.** Public visibility permits review under GitHub's terms. Running, building, modifying, reusing or redistributing project-owned materials requires prior written permission, except where applicable law or platform terms provide otherwise. See the bilingual [rights notice](RIGHTS.md).
+
+The project-authored SVG generates the PNG/ICO icon; screenshots use project-generated synthetic examples. Electron, electron-builder, esbuild, sharp, Lucide (including Feather-derived icons), Marked and DOMPurify have independent third-party terms, retained with source references in [THIRD_PARTY_NOTICES](app/THIRD_PARTY_NOTICES.txt). DOMPurify uses its Apache-2.0 option; Electron distributions include Chromium notices. These terms do not license the project's own materials.

@@ -2,111 +2,71 @@
 
 # Deadline Tracker - XEvent
 
-在 Windows 本地管理重要事项、截止时间、计划和跟进记录的桌面工作台。
+**把重要事项的截止时间、行动计划、进度和下一次跟进连在一起的 Windows 桌面工作台。**
 
-XEvent 是一个个人项目，用于集中记录学业、工作和生活中的重要安排。当前软件界面为简体中文。应用版本：**1.0.2**；JSON 数据格式版本：**1**。
+## 项目价值
 
-**保留所有权利。** 本仓库公开供查看，不属于开源项目。运行、构建、修改（包括修改功能）、复用或再分发项目自有内容，须事先取得所有者书面许可，适用法律或 GitHub 平台条款另有规定的除外。下文仅记录经所有者授权的安装与验证方法，不构成授权。详见 [RIGHTS](RIGHTS.md)。
+申请、项目和生活中的重要安排，往往需要持续推进：仅记录截止日期，还不足以说明计划、已有进展和下一步行动。XEvent 将这些信息集中在同一事项中，让使用者看清 **哪些事需要关注、推进到哪里、接下来做什么**。
+
+项目面向个人学业、工作和生活规划，支持独立的截止／跟进时间、目标、策略、阶段进度及 Markdown 记录。卡片、列表、状态看板和截止时间线从不同角度呈现同一批事项。数据保存在本地，日常使用无需账号或联网；目前为单人应用，没有云同步和协作服务。
+
+## 我的贡献 — Sean-xzx
+
+我发起并主导这个个人项目，采用 **AI 辅助完成实现、测试与仓库整理**。我的主要贡献是：
+
+- **需求定义与产品取舍：** 明确学业／工作／生活混合使用的场景，提出将截止时间与跟进、进度、下一步行动结合的需求。
+- **界面评审与迭代：** 根据实际运行界面，指出侧栏未铺满、鼓励性文案过多等问题，推动调整信息层次和视觉风格。
+- **工程交付推进：** 推动项目形成可运行的 Windows EXE、可恢复的本地数据、双语文档及从干净仓库副本验证的流程。
+
+这些工作体现需求分析、界面评估和交付判断能力。下文代码与验证记录展示最终实现，不声称全部组件由我独立手写完成。
+
+## 技术与设计方法
+
+- **区分截止与跟进。** 没有截止日期的事项也可以安排跟进。共用规则按逾期、待跟进、临近截止排序；持久化通知键避免同一触发条件反复提醒。见[领域规则](app/domain.cjs)。
+- **跨运行边界复用规则。** 界面和 Electron 主进程复用校验／进度逻辑，通过受限 preload API 执行桌面操作；Markdown 经 Marked 解析、DOMPurify 清理。浏览器预览使用独立的 localStorage 适配器。见[架构与文件地图](docs/architecture.md)。
+- **让本地数据可恢复。** 保存先写临时文件再重命名，最多保留 14 份备份；导入先校验，再按编号和较新的更新时间合并，保留本地偏好。完成／重新开始、回收／恢复保留事项记录。见[存储实现](app/store.cjs)。
+
+这些是面向产品需求的工程设计，不声称提出了新算法或研究结论。
+
+## 成果证据
+
+| 证据 | 能说明什么 |
+| --- | --- |
+| 下方真实 Electron 截图 | 桌面界面实际呈现内置虚构事项 |
+| **15 项自动测试通过** | 领域规则、持久化、备份与 IPC 处理；主进程测试中的系统 API 使用模拟 |
+| **真实桌面冒烟验证通过** | 界面、preload、IPC 与磁盘保存协同工作，覆盖新增／修改／回收／恢复、无效日期拒绝及页面重载 |
+| **从干净远程副本成功构建 Windows x64 可移植版** | 文档中的依赖／构建流程生成 `release/XEvent-1.0.2.exe` |
+
+已验证的源码提交 `98929fd` 也有[成功的 Windows CI 记录](https://github.com/Sean-xzx/Deadline-Tracker-XEvent/actions/runs/37738822673)。[验证说明](docs/validation.md) 区分自动证据与手工检查。
 
 ![真实 Electron 桌面窗口与虚构示例事项](docs/images/overview.png)
 
-截图来自真实 Electron 程序，使用内置的虚构示例。示例日期随加载日期变化，编号和时间戳也会变化。
+六条示例包含五条未完成事项和一条已完成事项；日期、编号与时间戳随运行变化。这些证据属于功能／构建验证，没有用户研究或效率提升测量。原生通知送达、实际开机启动和托盘交互仍需手工验证。
 
-## 功能与适用范围
+## 运行与验证
 
-- 独立的截止与跟进时间；优先级、重点标记、目标、策略和下一步行动。
-- 带进度的阶段清单；可编辑的 Markdown 跟进记录和 HTTP/HTTPS 资料链接。
-- 卡片、列表、可拖动状态的看板、截止时间线；分类、搜索与排序。
-- 完成与重新开始、可恢复的回收站、浅色／深色／系统主题、快捷键。
-- 本地 JSON 存储、自动备份、手动导出与导入；按编号和更新时间合并。
-- Windows 跟进、临近截止、逾期及每日汇总通知；稍后提醒、托盘驻留，以及打包 EXE 中可选的开机启动。
+应用版本 **1.0.2**，数据格式 **1**，界面为简体中文。已验证环境：**Windows 11 Home x64（构建 26200）、Node.js 22.23.2、npm 10.9.8、Electron 44.5.1**。依赖要求 Node >=22.12.0，其他开发 Node 版本未验证。
 
-软件面向单人本地使用，没有云同步、协作服务、账号或服务端数据库。安装或构建完成后，管理本地事项无需联网；打开外部资料链接时可能需要网络。
+安装需要 Git，并能访问 npm、Electron 和打包工具下载地址；无需项目私人凭据、外部数据集、模型或付费服务。依赖／构建产物占用数百 MB，全新构建可能需要数分钟；EXE 使用者无需 Node.js。以下记录经所有者授权的使用方法，不构成授权，详见[权利声明](RIGHTS.md)。
 
-## 环境要求
-
-- **本地已验证：** Windows 11 Home x64，系统构建 26200；Node.js **22.23.2**、npm **10.9.8**、Electron **44.5.1**。Electron 内嵌 Node 与开发环境 Node 不是同一个版本。
-- 开发请使用带 npm 的 Node.js **22.23.2**；依赖要求 Node >=22.12.0。其他 Node 版本及 Windows 10 本次未验证；Linux/macOS 桌面运行和打包未验证。
-- 全新安装／构建需要 Git，并能访问 npm、Electron 下载地址及打包工具。无需项目 API 密钥、付费服务、模型、外部数据集或签名证书。
-- 本文可移植版构建流程使用 Windows x64；EXE 使用者不需要安装 Node.js。依赖与构建产物占用数百 MB，全新打包可能需要数分钟。
-
-## 快速开始
-
-在 PowerShell 中依次执行：
+在 PowerShell 中执行：
 
 ```powershell
 git clone https://github.com/Sean-xzx/Deadline-Tracker-XEvent.git
 cd Deadline-Tracker-XEvent
-node --version
 npm ci
 node node_modules/electron/install.js
 npm test
 npm start
 ```
 
-预期结果：15 项测试通过，随后打开标题为 `XEvent · 重大事项` 的窗口。新的数据目录初始为空；点击 `新建事项` 创建记录，或点击 `载入示例` 加载六条虚构示例。已有本地数据目录会保留自己的内容。
+**成功标准：** 15 项测试通过，打开标题为 `XEvent · 重大事项` 的窗口。新桌面数据目录初始为空，已有数据会保留。点击 `载入示例` 后，总览显示五条事项，`已完成` 中有一条。最小编辑示例：新建事项，分别设置截止／跟进时间，添加两个阶段并完成其中一个，进度应为 **50%**。
 
-如果仅需独立的浏览器预览：
+浏览器预览：先运行 `npm run build:ui`，再运行 `npm run preview`，打开 [localhost:4173](http://127.0.0.1:4173)。新浏览器存储自动加载示例，Ctrl+C 停止服务。浏览器数据独立，不提供 Windows 通知、托盘及开机启动。
 
-```powershell
-npm run build:ui
-npm run preview
-```
-
-打开 [http://127.0.0.1:4173](http://127.0.0.1:4173)。全新的浏览器存储会自动包含六条示例。按 Ctrl+C 停止预览。预览使用独立 localStorage，不提供 Windows 通知、系统托盘及开机启动，不能替代桌面验证。
-
-## 代表性使用流程
-
-1. 在空的桌面数据目录中点击 `载入示例`：应保存 **六条事项**，总览显示 **五条未完成事项**，`已完成` 中有 **一条**。
-2. 新建 `Submit application`，分类选 `学业`，分别设置截止时间与跟进时间。下一步填写 `Review the materials`，阶段清单写两行，其中一行标记 `[x]`。预期进度为 **50%**。
-3. 新增并编辑 Markdown 跟进记录，切换卡片／列表／看板／时间线。标记完成后，事项进入 `已完成`；点击 `重新开始` 可恢复推进。
-4. 将事项移入 `回收站` 后恢复，笔记与阶段仍保留。在设置中导出 JSON，再次导入时按编号合并，不会重复新增；当前偏好保留。
-5. 通过托盘菜单退出并重新打开，确认数据仍存在。验证实际系统通知时，在设置中启用通知并点击 `发送测试通知`。Windows 通知与勿扰设置会影响送达。
-
-快捷键：Ctrl+N 新建，Ctrl+K 搜索，Ctrl+Enter 保存当前编辑器／笔记，Esc 关闭弹窗。下文的自动示例使用隔离的临时数据目录，不修改正式数据。
-
-## 配置与资源
-
-无需 `.env` 文件。偏好在界面中设置并与数据一起保存。默认浅色主题、开启通知、关闭窗口后保留托盘、不开机启动、每日 09:00 汇总、截止前提前三天提醒。
-
-- 正式桌面数据：`%APPDATA%/XEvent/events.json`；备份位于旁边的 `backups/` 目录。可从设置打开实际数据目录。
-- `XEVENT_DATA_DIR` 可覆盖数据目录，用于隔离开发／测试，同时跳过打包版的 Windows 快捷方式注册。启动前设置，结束后移除。例如：
-
-  ```powershell
-  $env:XEVENT_DATA_DIR = Join-Path $env:TEMP 'xevent-dev-profile'
-  npm start
-  Remove-Item Env:XEVENT_DATA_DIR
-  ```
-
-- 浏览器键：`xevent-browser-preview-v1` 保存数据，`xevent-ui-v1` 保存视图选择。浏览器与桌面数据独立。
-- Store 实例在相应 UTC 日期首次保存已有文件时备份，导入前额外备份；保留最近 **14** 份。保存先写临时 JSON 再重命名。导出包含已完成与回收站事项，**没有加密**。
-- 导入接受格式版本 1，最多 10,000 条事项及 20 MB 文件；拒绝无效日期和重复编号。启动时数据无效会保留原文件并报告错误，不覆盖它。
-- 示例由 `sampleEvents()` 生成，截图和示例全部为虚构内容，无需额外下载数据或模型。编号、日期、压缩与环境差异意味着不同构建的 EXE 哈希及截图不保证完全一致。
-
-## 目录与架构
-
-| 路径 | 职责 |
-| --- | --- |
-| `src/renderer.js` | 界面源码、编辑、筛选、视图与浏览器预览适配 |
-| `app/main.cjs` | 桌面入口：窗口、IPC、通知、托盘、导入导出、开机启动 |
-| `app/preload.cjs` | 通过 `window.xevent` 暴露受限 API |
-| `app/domain.cjs` | 共用校验、进度、排序、提醒规则与示例 |
-| `app/store.cjs` | JSON 保存与备份保留 |
-| `app/index.html`、`styles.css`、`design.css` | 页面、基础布局、当前视觉层；两个样式文件都需要保留 |
-| `assets/` | 原始 SVG 图标与小体积 PNG／ICO 生成文件 |
-| `scripts/` | 界面／图标构建、浏览器预览、仓库与桌面验证 |
-| `tests/` | 领域／存储测试，以及模拟系统边界的主进程 IPC 测试 |
-| `docs/` | 架构、验证细节与真实的虚构数据截图 |
-| `.github/workflows/verify.yml` | Windows 依赖安装、检查、桌面冒烟及可移植 EXE 构建 |
-
-渲染进程调用 preload API；主进程校验请求，应用领域规则，通过 Store 保存，再向界面广播新快照。提醒定时器读取同一批事项并记录通知去重键。浏览器预览把桌面 API 替换为 localStorage 操作。详见[模块关系与文件地图](docs/architecture.md)。
-
-`build:ui` 生成 `app/bundle.js` 和 `app/assets/icon.svg`。`node_modules/`、`release/`、本地 EXE、测试数据目录、缓存、私人报告和备份不提交。已有历史产物仍在本地保留；使用下面的命令重建当前 EXE。
-
-## 测试与打包
+完成安装后，检查资源并构建可移植 EXE：
 
 ```powershell
-npm test
 npm run build:ui
 npm run icons
 node scripts/check-repository.cjs
@@ -114,24 +74,22 @@ npx --no-install electron scripts/smoke-desktop.cjs
 npm run dist
 ```
 
-预期结果：15 项测试通过，仓库检查输出成功信息，桌面冒烟 JSON 包含 `"passed":true`，并生成 **`release/XEvent-1.0.2.exe`**。双击该可移植 EXE 即可打开。冒烟报告和截图位于 `artifacts/desktop-smoke/`；全部冒烟数据写入新建的系统临时目录。第三方声明放在 `app/` 下，随程序打包。
+**成功标准：** 仓库检查通过，冒烟报告包含 `"passed":true`，并生成 `release/XEvent-1.0.2.exe`，双击即可打开。冒烟使用隔离的临时数据目录，报告／截图写入 `artifacts/desktop-smoke/`。[GitHub Actions](https://github.com/Sean-xzx/Deadline-Tracker-XEvent/actions) 在推送和 Pull Request 时运行这些检查。
 
-已有测试覆盖持久化、备份、提醒去重、日期错误、输入限制和 IPC 操作。`tests/main.test.cjs` 模拟窗口／对话框／通知／开机启动等系统接口；独立桌面冒烟运行真实渲染进程、preload、IPC 和文件。它**不能**证明原生通知送达、开机启动或托盘点击有效。[验证证据、手工检查与限制](docs/validation.md) 区分了这些层次。[GitHub Actions](https://github.com/Sean-xzx/Deadline-Tracker-XEvent/actions) 在推送与 Pull Request 时运行自动流程；是否通过以具体运行结果为准。
+## 数据、实现与限制
 
-## 常见问题与项目状态
+无需 `.env`。设置中可调整主题、提醒、托盘驻留和打包 EXE 的开机启动。默认浅色主题、开启通知及托盘驻留、不开机启动、每日 09:00 汇总、截止前提前三天提醒。桌面数据位于 `%APPDATA%/XEvent/events.json`，可从设置打开实际目录或导出／导入备份；导出包含已完成和回收站事项，**没有加密**。`XEVENT_DATA_DIR` 可指定隔离测试目录，同时跳过打包版 Windows 快捷方式注册；启动前设置，结束后移除。
 
-- **依赖下载失败：** 检查 npm／Electron 下载地址及代理访问，再尝试 `npm ci`。不要提交个人代理凭据，也不要仅为绕过网络问题替换锁文件。不保证离线全新安装。
-- **依赖审计（2026-10-08）：** npm 报告 electron-builder 依赖链中 8 项中等风险告警，根源为 `sprintf-js`；该次审计未报告高危／严重项。本次保留原依赖版本与锁文件，不属于依赖安全升级。变更构建工具链前请检查 `npm audit`。
-- **预览打不开或内容过时：** 先构建界面，确认 4173 端口未被占用，并保持预览命令运行。浏览器示例日期对应当前存储首次加载的日期。
-- **没有通知：** 保持程序运行，检查 Windows 通知／勿扰设置，并尝试设置中的测试按钮。完全退出、关机与休眠期间无法及时提醒。
-- **关闭托盘驻留后无法重新打开：** 源码存在窗口生命周期限制，可能留下托盘但窗口已销毁。请保留默认托盘驻留，并从托盘菜单完整退出。本次整理遵守不改核心实现的要求，没有修复该问题。
-- **开机启动：** 仅在打包 EXE 中可用。移动 EXE 后关闭再开启，以更新路径。实际登录启动仍属于手工验证项。
-- **分发：** 构建未签名，未配置代码签名证书或自动更新，未验证 SmartScreen 接受情况。不声称已测试 Windows 10、Linux/macOS 或其他架构。
+入口为 `app/main.cjs`。界面源码 `src/renderer.js` 调用 `app/preload.cjs`；主进程通过 `app/domain.cjs` 校验请求、通过 `app/store.cjs` 保存，再向界面广播快照。`build:ui` 生成界面 bundle；`app/styles.css` 与 `app/design.css` 均须保留。依赖目录、构建产物、私人数据、缓存与备份不纳入 Git。
 
-这是个人项目，没有维护 SLA 或固定发布计划，不默认授权代码贡献或功能修改。需要授权的使用请先通过 [Issues](https://github.com/Sean-xzx/Deadline-Tracker-XEvent/issues) 向所有者申请书面许可。获授权的开发者须同步双语 README，并附相关验证。问题报告应包含系统、Node／Electron 版本、复现步骤和预期／实际结果；使用虚构数据，不上传真实 `events.json` 或凭据。
+- **系统集成：** 提醒需要程序运行，关机、休眠和 Windows 通知设置会影响送达。关闭托盘驻留可能留下托盘但窗口已销毁，导致无法重新打开；建议保留默认值，并从托盘菜单完整退出。移动打包 EXE 后，需关闭再开启开机启动以更新路径。
+- **兼容与分发：** Windows 10、macOS/Linux、其他架构、其他 Node 版本和 SmartScreen 未验证。构建未签名，没有自动更新。
+- **依赖：** 2026-10-08 审计报告 electron-builder 依赖链经 `sprintf-js` 存在 8 项中等风险告警，无高危／严重项；保留原锁文件。下载失败时检查网络／代理，不保证离线全新安装。
 
-## 许可证与致谢
+延伸阅读：[架构与各文件职责](docs/architecture.md)、[验证命令与手工检查](docs/validation.md)、[中文使用说明](使用说明.md)。这是个人项目，没有维护 SLA 或固定发布计划。通过 [Issues](https://github.com/Sean-xzx/Deadline-Tracker-XEvent/issues) 报告问题时，请提供版本、复现步骤和虚构数据，不上传私人记录或凭据；代码贡献及功能修改须事先取得书面许可。
 
-Copyright (c) 2026 Sean-xzx。**保留所有权利，不提供开源许可证。** 公开可见仅供按 GitHub 条款查看，不额外授予使用、构建、修改功能、复用或再分发项目自有内容的许可；请事先取得所有者书面许可。详见双语[权利声明](RIGHTS.md)，其中说明公开仓库的查看／fork 边界及独立第三方许可。
+## 权利与资源来源
 
-XEvent SVG 图标为项目自制，PNG／ICO 由它生成。截图使用项目生成的示例。Electron、electron-builder、esbuild、sharp、Lucide（含 Feather 衍生图标）、Marked 和 DOMPurify 为第三方依赖。[THIRD_PARTY_NOTICES](app/THIRD_PARTY_NOTICES.txt) 保留界面依赖及直接构建工具的实际许可证文本和来源，DOMPurify 采用 Apache-2.0 选项；Electron 桌面分发包含 Chromium 声明。依赖许可与本项目许可分别适用。
+Copyright (c) 2026 Sean-xzx。**保留所有权利，不提供开源许可证。** 公开可见允许按 GitHub 条款查看；运行、构建、修改、复用或再分发项目自有内容须事先取得书面许可，适用法律或平台条款另有规定的除外。详见双语[权利声明](RIGHTS.md)。
+
+项目自制 SVG 用于生成 PNG／ICO 图标，截图使用项目生成的虚构示例。Electron、electron-builder、esbuild、sharp、Lucide（含 Feather 衍生图标）、Marked 和 DOMPurify 的第三方条款独立适用，实际文本及来源保留在 [THIRD_PARTY_NOTICES](app/THIRD_PARTY_NOTICES.txt)。DOMPurify 采用 Apache-2.0 选项，Electron 分发包含 Chromium 声明；这些条款不授权使用项目自有内容。
