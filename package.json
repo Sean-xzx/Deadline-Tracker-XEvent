@@ -1,0 +1,56 @@
+{
+  "name": "xevent-desktop",
+  "version": "1.0.2",
+  "description": "重大事项管理",
+  "author": "XEvent",
+  "private": true,
+  "main": "app/main.cjs",
+  "scripts": {
+    "start": "npm run build:ui && electron .",
+    "build:ui": "node scripts/build.cjs",
+    "icons": "node scripts/icons.cjs",
+    "preview": "node scripts/preview.cjs",
+    "test": "node --test tests/*.test.cjs",
+    "dist": "npm run build:ui && npm run icons && electron-builder --win portable --x64 --publish never"
+  },
+  "devDependencies": {
+    "dompurify": "3.4.16",
+    "electron": "44.5.1",
+    "electron-builder": "26.15.3",
+    "esbuild": "^0.25.0",
+    "lucide": "1.52.0",
+    "marked": "18.0.14",
+    "sharp": "0.35.5"
+  },
+  "build": {
+    "appId": "com.xevent.desktop",
+    "productName": "XEvent",
+    "directories": {
+      "output": "release",
+      "buildResources": "assets"
+    },
+    "files": [
+      "app/**/*",
+      "assets/icon.ico",
+      "assets/icon.png",
+      "package.json"
+    ],
+    "asar": true,
+    "electronDist": "node_modules/electron/dist",
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "portable": {
+      "artifactName": "XEvent-${version}.exe",
+      "requestExecutionLevel": "user"
+    }
+  }
+}
