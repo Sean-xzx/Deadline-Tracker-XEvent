@@ -46,7 +46,7 @@ The invalid-date error printed during smoke/tests is expected: rejection is asse
 - Dependency audit: eight moderate findings in the electron-builder chain via `sprintf-js`; no high/critical findings in the 2026-10-08 audit. Dependencies were preserved, not automatically upgraded.
 - Core source preservation: SHA-256 comparison against the private pre-edit snapshot protects the original desktop, renderer, domain, storage, markup, styles, build scripts and existing tests. Private snapshot paths/manifests are deliberately not published.
 - Clean local packaging: `npm run dist` exited 0 with a 100,097,154-byte Windows x64 portable EXE. Packaging tools were downloaded into a new builder cache. Core modules and the UI bundle in `app.asar` matched the clean source; third-party and Chromium notices were present.
-- Remote source push, CI and remote-clone validation have not run: publication awaits the owner's license decision. The public repository has been created and its owner, visibility and push permission verified.
+- The owner selected all rights reserved, with no open-source license. Setup/build instructions do not authorize use or functional modifications. The public repository's owner, visibility and push permission were verified; the remote CI run and final delivery record identify the published commit and its verification results.
 
 - 整理前基线：Windows 11 Home x64（10.0.26200）、Node 22.23.2、npm 10.9.8，已有 15 项测试全部通过。
 - 真实桌面冒烟：Electron 44.5.1（内嵌 Node 24.21.0）使用隔离虚构数据通过；公开截图由该次运行捕获。
@@ -54,7 +54,7 @@ The invalid-date error printed during smoke/tests is expected: rejection is asse
 - 依赖审计：electron-builder 依赖链经 `sprintf-js` 存在 8 项中等风险告警；2026-10-08 审计无高危／严重项。保留原依赖，没有自动升级。
 - 核心源码保护：与私有修改前快照进行 SHA-256 比较，保护原桌面、界面、领域、存储、页面、样式、构建脚本及原测试。私有备份路径与清单不公开。
 - 全新本地打包：`npm run dist` 退出 0，生成 100,097,154 字节的 Windows x64 可移植 EXE；打包工具下载到全新缓存。`app.asar` 中核心模块及界面 bundle 与干净源码一致，第三方和 Chromium 声明完整。
-- 远程源码推送、CI 和远程克隆验证尚未执行：发布等待所有者选择许可证。公开仓库已创建并核实所有者、可见性和推送权限。
+- 所有者已选择保留所有权利、不提供开源许可证；安装与构建说明不授权使用或功能修改。已核实公开仓库所有者、可见性与推送权限，远程 CI 和最终交付记录指明发布提交及其验证结果。
 
 ## Still manual or unverified / 仍需手工检查或未验证
 

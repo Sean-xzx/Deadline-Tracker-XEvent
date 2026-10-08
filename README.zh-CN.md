@@ -6,6 +6,8 @@
 
 XEvent 是一个个人项目，用于集中记录学业、工作和生活中的重要安排。当前软件界面为简体中文。应用版本：**1.0.2**；JSON 数据格式版本：**1**。
 
+**保留所有权利。** 本仓库公开供查看，不属于开源项目。运行、构建、修改（包括修改功能）、复用或再分发项目自有内容，须事先取得所有者书面许可，适用法律或 GitHub 平台条款另有规定的除外。下文仅记录经所有者授权的安装与验证方法，不构成授权。详见 [RIGHTS](RIGHTS.md)。
+
 ![真实 Electron 桌面窗口与虚构示例事项](docs/images/overview.png)
 
 截图来自真实 Electron 程序，使用内置的虚构示例。示例日期随加载日期变化，编号和时间戳也会变化。
@@ -126,10 +128,10 @@ npm run dist
 - **开机启动：** 仅在打包 EXE 中可用。移动 EXE 后关闭再开启，以更新路径。实际登录启动仍属于手工验证项。
 - **分发：** 构建未签名，未配置代码签名证书或自动更新，未验证 SmartScreen 接受情况。不声称已测试 Windows 10、Linux/macOS 或其他架构。
 
-这是个人项目，没有维护 SLA 或固定发布计划。贡献应保持范围小、附相关验证，并同步双语 README。问题请通过 [Issues](https://github.com/Sean-xzx/Deadline-Tracker-XEvent/issues) 提交，包含系统、Node／Electron 版本、复现步骤、预期与实际结果。报告使用虚构数据，不上传真实 `events.json` 或凭据。
+这是个人项目，没有维护 SLA 或固定发布计划，不默认授权代码贡献或功能修改。需要授权的使用请先通过 [Issues](https://github.com/Sean-xzx/Deadline-Tracker-XEvent/issues) 向所有者申请书面许可。获授权的开发者须同步双语 README，并附相关验证。问题报告应包含系统、Node／Electron 版本、复现步骤和预期／实际结果；使用虚构数据，不上传真实 `events.json` 或凭据。
 
 ## 许可证与致谢
 
-所有者尚未选定项目许可证，目前不授予项目使用许可；源码公开发布前须确认许可条件。
+Copyright (c) 2026 Sean-xzx。**保留所有权利，不提供开源许可证。** 公开可见仅供按 GitHub 条款查看，不额外授予使用、构建、修改功能、复用或再分发项目自有内容的许可；请事先取得所有者书面许可。详见双语[权利声明](RIGHTS.md)，其中说明公开仓库的查看／fork 边界及独立第三方许可。
 
 XEvent SVG 图标为项目自制，PNG／ICO 由它生成。截图使用项目生成的示例。Electron、electron-builder、esbuild、sharp、Lucide（含 Feather 衍生图标）、Marked 和 DOMPurify 为第三方依赖。[THIRD_PARTY_NOTICES](app/THIRD_PARTY_NOTICES.txt) 保留界面依赖及直接构建工具的实际许可证文本和来源，DOMPurify 采用 Apache-2.0 选项；Electron 桌面分发包含 Chromium 声明。依赖许可与本项目许可分别适用。

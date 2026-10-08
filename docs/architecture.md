@@ -58,6 +58,7 @@ In browser preview, `renderer.js` detects the absence of `window.xevent` and use
 | `tests/main.test.cjs` | 4 main-process handler checks with OS boundaries mocked / 4 项模拟系统边界的主进程检查 |
 | `.github/workflows/verify.yml` | Windows CI install, tests, build, desktop smoke and portable packaging / Windows 自动安装、测试、构建、桌面冒烟与打包 |
 | `README.md`, `README.zh-CN.md` | Equivalent English/Chinese setup and usage / 等价的中英文说明 |
+| `RIGHTS.md` | Bilingual reservation of project-owned rights; no open-source grant / 双语项目权利保留声明，不授予开源许可 |
 | `使用说明.md` | Short end-user instructions / 简明用户操作说明 |
 | `docs/validation.md` | Verification evidence and remaining manual checks / 验证证据与剩余手工检查 |
 | `docs/images/overview.png` | Real desktop screenshot with synthetic examples / 真实桌面与虚构示例截图 |

@@ -6,6 +6,8 @@ A local Windows desktop workspace for important matters, deadlines, plans and fo
 
 XEvent is a personal project for keeping study, work and life commitments together. The interface is currently in Simplified Chinese. Application version: **1.0.2**; JSON data format version: **1**.
 
+**All rights reserved.** This repository is publicly visible for review; it is not open source. Running, building, modifying (including changing functionality), reusing or redistributing project-owned materials requires the owner's prior written permission, except where applicable law or GitHub's platform terms provide otherwise. The instructions below document owner-authorized setup and verification; they do not grant permission. See [RIGHTS](RIGHTS.md).
+
 ![Real Electron desktop with synthetic example matters](docs/images/overview.png)
 
 This screenshot comes from the real Electron application running the built-in synthetic examples. Dates are relative to the day examples are loaded; UUIDs and timestamps change between runs.
@@ -126,10 +128,10 @@ The existing tests check persistence, backups, reminder deduplication, date erro
 - **Login startup:** available only in a packaged EXE. After moving the EXE, disable then re-enable it to update the stored path. Actual login behavior remains a manual validation item.
 - **Distribution:** builds are unsigned; no code-signing certificate or automatic updater is configured. SmartScreen acceptance is not verified. Windows 10, Linux/macOS and alternative architectures are not claimed as tested.
 
-This is a personal project with no maintenance SLA or promised release schedule. Contributions should be small and include relevant tests; keep both READMEs synchronized. Report reproducible problems through [Issues](https://github.com/Sean-xzx/Deadline-Tracker-XEvent/issues), stating OS, Node/Electron version, steps and expected/actual behavior. Use synthetic data in reports and never upload your real `events.json` or credentials.
+This is a personal project with no maintenance SLA or promised release schedule. No standing authorization is provided for code contributions or functional changes. Request the owner's written permission through [Issues](https://github.com/Sean-xzx/Deadline-Tracker-XEvent/issues) before any use requiring authorization. Authorized developers must keep both READMEs synchronized and attach relevant validation. Bug reports should state OS, Node/Electron version, steps and expected/actual behavior; use synthetic data and never upload real `events.json` files or credentials.
 
 ## License and acknowledgements
 
-The owner has not yet selected a project license. No project license is granted; the licensing decision must be confirmed before source publication.
+Copyright (c) 2026 Sean-xzx. **All rights reserved. No open-source license is granted.** Public visibility permits review under GitHub's terms; it does not grant additional permission to use, build, modify functionality, reuse or redistribute the project's own materials. Obtain prior written permission from the owner. See the bilingual [rights notice](RIGHTS.md), including the public-repository view/fork boundary and independent third-party terms.
 
 The XEvent SVG icon is project-authored; PNG/ICO files are generated from it. Screenshots contain project-generated examples. Electron, electron-builder, esbuild, sharp, Lucide (including Feather-derived icons), Marked and DOMPurify are third-party dependencies. Exact bundled-library and direct-tool license texts and source references are retained in [THIRD_PARTY_NOTICES](app/THIRD_PARTY_NOTICES.txt); DOMPurify uses its Apache-2.0 option. Electron includes its Chromium notices in desktop distributions. Dependency licensing remains separate from the project's license.
