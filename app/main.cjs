@@ -2,13 +2,17 @@ const {app,BrowserWindow,ipcMain,Tray,Menu,Notification,dialog,shell,nativeTheme
 const fs=require('node:fs');
 const path=require('node:path');
 const {Store}=require('./store.cjs');
+const {dataDirectoryOptions,prepareDataDirectory}=require('./data-directory.cjs');
 const {normalizeEvent,normalizeStore,normalizeSettings,reminderCandidates,attention,localDay,sampleEvents}=require('./domain.cjs');
 const APP_ID='com.xevent.desktop';
 const TOAST_CLSID='{C9155F20-274A-4CDA-9AEF-6E62D9285F0B}';
 app.setName('XEvent');
 app.setAppUserModelId(APP_ID);
 app.setToastActivatorCLSID(TOAST_CLSID);
-if(process.env.XEVENT_DATA_DIR)app.setPath('userData',path.resolve(process.env.XEVENT_DATA_DIR));
+const dataDirectory=dataDirectoryOptions(app.getPath('appData'),app.getPath('userData'),process.env.XEVENT_DATA_DIR);
+fs.mkdirSync(dataDirectory.dir,{recursive:true});
+app.setPath('userData',dataDirectory.dir);
+app.setPath('sessionData',dataDirectory.dir);
 let win,tray,store,quitting=false,timer;
 const locked=app.requestSingleInstanceLock();
 if(!locked)app.quit();
@@ -101,7 +105,7 @@ function createWindow(){
 if(locked){
  app.on('second-instance',()=>show());
  app.whenReady().then(()=>{
-   try{store=new Store(app.getPath('userData'));}catch(error){dialog.showErrorBox('XEvent 无法读取数据','原文件已保留，没有覆盖。请检查数据文件或从备份恢复。\n\n'+error.message);quitting=true;return app.quit();}
+   try{prepareDataDirectory(dataDirectory);store=new Store(dataDirectory.dir);}catch(error){dialog.showErrorBox('XEvent 无法读取数据','原文件已保留，没有覆盖。请检查数据文件或从备份恢复。\n\n'+error.message);quitting=true;return app.quit();}
    nativeTheme.themeSource=store.data.settings.theme;
    try{registerWindowsIntegration();}catch(error){console.error('Windows integration:',error.message);}
    registerIPC();createWindow();

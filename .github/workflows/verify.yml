@@ -41,5 +41,7 @@ jobs:
         run: node scripts/check-repository.cjs
       - name: Run the real desktop with isolated data
         run: npx --no-install electron scripts/smoke-desktop.cjs
+      - name: Verify data recovery across real Electron sessions
+        run: node scripts/check-upgrade.cjs
       - name: Build Windows x64 portable executable
         run: npm run dist

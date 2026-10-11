@@ -3,6 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const assert = require('node:assert/strict');
 const required = ['README.md','README.zh-CN.md','RIGHTS.md','docs/architecture.md','docs/validation.md',
+  'app/data-directory.cjs','tests/data-directory.test.cjs','scripts/check-upgrade.cjs',
   'docs/images/overview.png','app/THIRD_PARTY_NOTICES.txt','package-lock.json',
   'app/index.html','app/bundle.js','app/styles.css','app/design.css','app/assets/icon.svg',
   'assets/icon.ico','assets/icon.png'];

@@ -33,11 +33,11 @@ These are practical design choices for this product; no novel algorithm or resea
 | Evidence | What it establishes |
 | --- | --- |
 | Real Electron screenshot below | The desktop UI renders the built-in synthetic matters |
-| **15 passing automated tests** | Domain rules, persistence, backups and IPC handling; OS APIs are mocked in main-process tests |
+| **25 passing automated tests** | Domain rules, persistence, backups and IPC handling; OS APIs are mocked in main-process tests |
 | **Passing real desktop smoke test** | Renderer, preload, IPC and disk persistence work together through create/update/trash/restore, invalid-date rejection and page reload |
-| **Successful Windows x64 portable build from a clean remote clone** | The documented dependency/build workflow produces `release/XEvent-1.0.2.exe` |
+| **Successful Windows x64 portable build** | The documented dependency/build workflow produces `release/XEvent-1.0.3.exe` |
 
-The tested source commit `98929fd` also has a [successful Windows CI run](https://github.com/Sean-xzx/Deadline-Tracker-XEvent/actions/runs/37738822673). [Validation details](docs/validation.md) distinguish automated evidence from manual checks.
+The original 1.0.2 baseline (commit `98929fd`) has a [successful Windows CI run](https://github.com/Sean-xzx/Deadline-Tracker-XEvent/actions/runs/37738822673). [Validation details](docs/validation.md) distinguish automated evidence from manual checks.
 
 ![Real Electron desktop with synthetic example matters](docs/images/overview.png)
 
@@ -45,7 +45,7 @@ The six examples include five unfinished matters and one completed matter. Dates
 
 ## Run and verify
 
-Version **1.0.2**, data format **1**, Simplified Chinese UI. Verified on **Windows 11 Home x64 (build 26200), Node.js 22.23.2, npm 10.9.8 and Electron 44.5.1**. Dependencies require Node >=22.12.0; other development Node versions are unverified.
+Version **1.0.3**, data format **1**, Simplified Chinese UI. Verified on **Windows 11 Home x64 (build 26200), Node.js 22.23.2, npm 10.9.8 and Electron 44.5.1**. Dependencies require Node >=22.12.0; other development Node versions are unverified.
 
 Setup needs Git and network access to npm, Electron and packaging downloads; no private project credentials, external dataset, model or paid service is required. Installation/build output occupies hundreds of MB and a fresh build can take several minutes. EXE users do not need Node.js. These instructions document owner-authorized use; they do not grant permission. See [rights](RIGHTS.md).
 
@@ -60,7 +60,7 @@ npm test
 npm start
 ```
 
-**Success:** 15 tests pass and a window titled `XEvent · 重大事项` opens. A new desktop profile starts empty; existing local data is retained. Select `载入示例` to see six synthetic matters: five in the overview and one under `已完成`. For a minimal editing example, create a matter with separate deadline/follow-up times and two checklist stages; marking one stage done yields **50% progress**.
+**Success:** 25 tests pass and a window titled `XEvent · 重大事项` opens. A new desktop profile starts empty; existing local data is retained. Select `载入示例` to see six synthetic matters: five in the overview and one under `已完成`. For a minimal editing example, create a matter with separate deadline/follow-up times and two checklist stages; marking one stage done yields **50% progress**.
 
 For browser preview, run `npm run build:ui`, then `npm run preview` and open [localhost:4173](http://127.0.0.1:4173). A fresh browser profile loads the examples automatically; Ctrl+C stops the server. Browser data is separate and Windows notification/tray/login integration is unavailable.
 
@@ -71,12 +71,15 @@ npm run build:ui
 npm run icons
 node scripts/check-repository.cjs
 npx --no-install electron scripts/smoke-desktop.cjs
+node scripts/check-upgrade.cjs
 npm run dist
 ```
 
-**Success:** repository checks pass, the smoke report contains `"passed":true`, and `release/XEvent-1.0.2.exe` is generated. Double-click the EXE to open it. The smoke uses an isolated temporary profile and writes reports/screenshots to `artifacts/desktop-smoke/`. [GitHub Actions](https://github.com/Sean-xzx/Deadline-Tracker-XEvent/actions) runs these checks on pushes and pull requests.
+**Success:** repository checks pass, the smoke report contains `"passed":true`, and `release/XEvent-1.0.3.exe` is generated. Double-click the EXE to open it. The smoke uses an isolated temporary profile and writes reports/screenshots to `artifacts/desktop-smoke/`. [GitHub Actions](https://github.com/Sean-xzx/Deadline-Tracker-XEvent/actions) runs these checks on pushes and pull requests.
 
 ## Data, implementation and limitations
+
+From 1.0.3, desktop and session data use a fixed, non-versioned directory. Missing/empty data can recover a validated legacy database after preserving both originals; conflicting or damaged files stop startup without replacement. Existing nonempty current data is never overwritten. Migration copies remain in `upgrade-recovery/`. See [upgrade steps](使用说明.md) and [migration rules](docs/architecture.md).
 
 No `.env` is needed. Settings control theme, reminders, tray residency and optional packaged-EXE login startup. Defaults are light theme, notifications and close-to-tray enabled, login startup disabled, a 09:00 daily summary and three days' deadline lead time. Desktop data is in `%APPDATA%/XEvent/events.json`; settings can open the actual directory and export/import backups. Exports include completed/trashed matters and are **not encrypted**. `XEVENT_DATA_DIR` selects an isolated test directory and skips packaged Windows shortcut registration; set it before launching and remove it afterwards.
 

@@ -1,8 +1,8 @@
 # Architecture / 架构
 
-The existing desktop and UI implementation is preserved. This map covers the maintained source files, not installed dependencies or historical build copies.
+The 1.0.3 update fixes data-directory selection and legacy recovery; the existing UI and matter model remain unchanged. This map covers source files, not installed dependencies or historical build copies.
 
-本次保留现有桌面和界面实现。以下文件地图描述项目源码，不逐项列举安装依赖或历史构建副本。
+1.0.3 修复数据目录选择与旧数据迁移，保留现有界面和事项模型。以下文件地图描述项目源码，不逐项列举安装依赖或历史构建副本。
 
 ```mermaid
 flowchart LR
@@ -43,6 +43,7 @@ In browser preview, `renderer.js` detects the absence of `window.xevent` and use
 | `app/preload.cjs` | API bridge and snapshot/selection listeners / API 桥接与快照／选择监听 |
 | `app/domain.cjs` | Enumerations, normalization, deadline calculations, attention ranking, reminder candidates and samples / 枚举、校验、截止计算、关注排序、提醒候选与示例 |
 | `app/store.cjs` | Read/normalize JSON, temporary-write-and-rename saves, backups and snapshots / JSON 读取校验、临时写入与重命名、备份与快照 |
+| `app/data-directory.cjs` | Stable profile location and guarded legacy-data recovery / 固定数据目录与受保护的旧数据迁移 |
 | `app/index.html` | CSP, stylesheet order, application/dialog containers and bundle entry / 内容安全策略、样式顺序、容器与 bundle 入口 |
 | `app/styles.css` | Base component/layout/responsive rules / 基础组件、布局和响应式规则 |
 | `app/design.css` | Current visual overrides, loaded after the base stylesheet / 在基础样式后加载的当前视觉覆盖层 |
@@ -69,6 +70,10 @@ Generated `app/bundle.js` and `app/assets/icon.svg` are not source-of-truth file
 生成的 `app/bundle.js` 和 `app/assets/icon.svg` 不是权威源码，请勿手改 bundle。两个样式表互相补充，不能把基础样式当作废弃文件删除。
 
 ## Data and reminders / 数据与提醒
+
+From 1.0.3, desktop data and Chromium session storage are explicitly fixed to `app.getPath('appData')/XEvent`, independent of application metadata and EXE location. `XEVENT_DATA_DIR` still selects an isolated profile and never imports normal data. Before opening Store, startup checks the existing canonical database. A nonempty valid database is authoritative; missing/empty data can be copied byte-for-byte from a valid nonempty legacy `events.json` in the previous Electron userData directory or `xevent-desktop`. Different candidate files or invalid data stop startup without replacing anything. Migration retains the source and records source/previous-target copies in `upgrade-recovery/`; these copies are not subject to the ordinary 14-backup rotation. It does not migrate browser-preview data or legacy Chromium caches.
+
+从 1.0.3 起，桌面数据和 Chromium 会话存储显式固定到 `app.getPath('appData')/XEvent`，不随应用元信息或 EXE 位置变化。`XEVENT_DATA_DIR` 仍用于隔离目录，且不导入正式数据。启动 Store 前先检查固定目录：有效且非空的数据优先；数据缺失或为空时，可从原 Electron userData 目录或 `xevent-desktop` 中有效、非空的 `events.json` 逐字节迁移。候选文件不同或数据无效时停止启动，不替换原文件。迁移保留源文件，并在 `upgrade-recovery/` 留存源文件／原目标副本，不受日常 14 份备份轮换影响；不迁移浏览器预览数据或旧 Chromium 缓存。
 
 Store format 1 contains `settings`, `events`, and `notificationHistory`. Matters hold stable IDs, category/status/priority, deadline and follow-up, goal/strategy/next action, stages, notes, links, timestamps, trash and snooze fields. Import normalization rejects invalid dates/duplicate IDs. Import merges by ID, accepts newer `updatedAt` values, and retains local preferences.
 

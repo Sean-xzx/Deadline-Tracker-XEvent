@@ -33,11 +33,11 @@
 | 证据 | 能说明什么 |
 | --- | --- |
 | 下方真实 Electron 截图 | 桌面界面实际呈现内置虚构事项 |
-| **15 项自动测试通过** | 领域规则、持久化、备份与 IPC 处理；主进程测试中的系统 API 使用模拟 |
+| **25 项自动测试通过** | 领域规则、持久化、备份与 IPC 处理；主进程测试中的系统 API 使用模拟 |
 | **真实桌面冒烟验证通过** | 界面、preload、IPC 与磁盘保存协同工作，覆盖新增／修改／回收／恢复、无效日期拒绝及页面重载 |
-| **从干净远程副本成功构建 Windows x64 可移植版** | 文档中的依赖／构建流程生成 `release/XEvent-1.0.2.exe` |
+| **成功构建 Windows x64 可移植版** | 文档中的依赖／构建流程生成 `release/XEvent-1.0.3.exe` |
 
-已验证的源码提交 `98929fd` 也有[成功的 Windows CI 记录](https://github.com/Sean-xzx/Deadline-Tracker-XEvent/actions/runs/37738822673)。[验证说明](docs/validation.md) 区分自动证据与手工检查。
+原 1.0.2 基线（提交 `98929fd`）有[成功的 Windows CI 记录](https://github.com/Sean-xzx/Deadline-Tracker-XEvent/actions/runs/37738822673)。[验证说明](docs/validation.md) 区分自动证据与手工检查。
 
 ![真实 Electron 桌面窗口与虚构示例事项](docs/images/overview.png)
 
@@ -45,7 +45,7 @@
 
 ## 运行与验证
 
-应用版本 **1.0.2**，数据格式 **1**，界面为简体中文。已验证环境：**Windows 11 Home x64（构建 26200）、Node.js 22.23.2、npm 10.9.8、Electron 44.5.1**。依赖要求 Node >=22.12.0，其他开发 Node 版本未验证。
+应用版本 **1.0.3**，数据格式 **1**，界面为简体中文。已验证环境：**Windows 11 Home x64（构建 26200）、Node.js 22.23.2、npm 10.9.8、Electron 44.5.1**。依赖要求 Node >=22.12.0，其他开发 Node 版本未验证。
 
 安装需要 Git，并能访问 npm、Electron 和打包工具下载地址；无需项目私人凭据、外部数据集、模型或付费服务。依赖／构建产物占用数百 MB，全新构建可能需要数分钟；EXE 使用者无需 Node.js。以下记录经所有者授权的使用方法，不构成授权，详见[权利声明](RIGHTS.md)。
 
@@ -60,7 +60,7 @@ npm test
 npm start
 ```
 
-**成功标准：** 15 项测试通过，打开标题为 `XEvent · 重大事项` 的窗口。新桌面数据目录初始为空，已有数据会保留。点击 `载入示例` 后，总览显示五条事项，`已完成` 中有一条。最小编辑示例：新建事项，分别设置截止／跟进时间，添加两个阶段并完成其中一个，进度应为 **50%**。
+**成功标准：** 25 项测试通过，打开标题为 `XEvent · 重大事项` 的窗口。新桌面数据目录初始为空，已有数据会保留。点击 `载入示例` 后，总览显示五条事项，`已完成` 中有一条。最小编辑示例：新建事项，分别设置截止／跟进时间，添加两个阶段并完成其中一个，进度应为 **50%**。
 
 浏览器预览：先运行 `npm run build:ui`，再运行 `npm run preview`，打开 [localhost:4173](http://127.0.0.1:4173)。新浏览器存储自动加载示例，Ctrl+C 停止服务。浏览器数据独立，不提供 Windows 通知、托盘及开机启动。
 
@@ -71,12 +71,15 @@ npm run build:ui
 npm run icons
 node scripts/check-repository.cjs
 npx --no-install electron scripts/smoke-desktop.cjs
+node scripts/check-upgrade.cjs
 npm run dist
 ```
 
-**成功标准：** 仓库检查通过，冒烟报告包含 `"passed":true`，并生成 `release/XEvent-1.0.2.exe`，双击即可打开。冒烟使用隔离的临时数据目录，报告／截图写入 `artifacts/desktop-smoke/`。[GitHub Actions](https://github.com/Sean-xzx/Deadline-Tracker-XEvent/actions) 在推送和 Pull Request 时运行这些检查。
+**成功标准：** 仓库检查通过，冒烟报告包含 `"passed":true`，并生成 `release/XEvent-1.0.3.exe`，双击即可打开。冒烟使用隔离的临时数据目录，报告／截图写入 `artifacts/desktop-smoke/`。[GitHub Actions](https://github.com/Sean-xzx/Deadline-Tracker-XEvent/actions) 在推送和 Pull Request 时运行这些检查。
 
 ## 数据、实现与限制
+
+从 1.0.3 起，桌面与会话数据使用固定、不含版本号的目录。数据缺失／为空时，先保留原文件，再迁移经校验的旧数据；文件冲突或损坏则停止，不替换数据。已有非空正式数据不会被覆盖，迁移副本保存在 `upgrade-recovery/`。见[升级步骤](使用说明.md)和[迁移规则](docs/architecture.md)。
 
 无需 `.env`。设置中可调整主题、提醒、托盘驻留和打包 EXE 的开机启动。默认浅色主题、开启通知及托盘驻留、不开机启动、每日 09:00 汇总、截止前提前三天提醒。桌面数据位于 `%APPDATA%/XEvent/events.json`，可从设置打开实际目录或导出／导入备份；导出包含已完成和回收站事项，**没有加密**。`XEVENT_DATA_DIR` 可指定隔离测试目录，同时跳过打包版 Windows 快捷方式注册；启动前设置，结束后移除。
 

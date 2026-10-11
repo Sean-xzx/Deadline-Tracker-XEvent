@@ -18,17 +18,19 @@ npm run build:ui
 npm run icons
 node scripts/check-repository.cjs
 npx --no-install electron scripts/smoke-desktop.cjs
+node scripts/check-upgrade.cjs
 npm run dist
 ```
 
 | Check / 检查 | Expected / 预期 | Evidence scope / 证据范围 |
 | --- | --- | --- |
 | `npm ci` | Exit 0; installed versions follow lockfile / 退出 0，版本符合锁文件 | Fresh dependency installation requires network / 全新安装需要网络 |
-| `npm test` | 15 pass, 0 fail / 15 通过，0 失败 | Real domain/storage and real main handler code; OS API mocks / 实际领域、存储和主进程处理代码，系统 API 模拟 |
+| `npm test` | 25 pass, 0 fail / 25 通过，0 失败 | Real domain/storage and real main handler code; OS API mocks / 实际领域、存储和主进程处理代码，系统 API 模拟 |
 | `build:ui`, `icons` | Nonempty bundle, copied SVG, PNG and ICO / 非空 bundle、SVG、PNG、ICO | Generated resources used by runtime / 运行所需生成资源 |
 | Repository checker | Success message, exit 0 / 成功信息，退出 0 | Local links/files and lock consistency, not all remote HTTP links / 本地路径和锁文件一致性，不替代所有远程链接检查 |
 | Desktop smoke | `passed:true`, report and screenshot / 成功报告和截图 | Real Electron, preload bridge, IPC, persistence and page reload / 真实桌面、桥接、IPC、保存与页面重载 |
-| Portable packaging | `release/XEvent-1.0.2.exe`, exit 0 / 生成 EXE，退出 0 | Unsigned Windows x64 build; not a signing/OS notification test / 未签名 Windows x64 构建，不代表签名或系统通知验证 |
+| `node scripts/check-upgrade.cjs` | `passed:true` / 通过 | Two real sessions, synthetic legacy data and changed default directories / 两次真实启动、虚构旧数据与默认目录变化 |
+| Portable packaging | `release/XEvent-1.0.3.exe`, exit 0 / 生成 EXE，退出 0 | Unsigned Windows x64 build; not a signing/OS notification test / 未签名 Windows x64 构建，不代表签名或系统通知验证 |
 
 The smoke creates a new directory prefixed `xevent-smoke-` in the OS temporary directory. It disables test-profile notifications, loads six fictional examples, captures the real window, exercises create/update/trash/restore and invalid-date rejection, verifies JSON on disk, then reloads the renderer and checks persisted values. It quits its own instance. Its report and screenshot go to `artifacts/desktop-smoke/` (ignored). A temporary Electron profile may remain in the OS temp directory after exit; it contains only synthetic test data.
 
@@ -38,7 +40,21 @@ The invalid-date error printed during smoke/tests is expected: rejection is asse
 
 冒烟和单元测试中打印的无效日期错误属于预期拒绝，仍须以退出码 0 为成功。已有测试使用固定本地时间；界面示例日期和编号刻意随时间／随机编号变化，不要求逐字节一致。
 
-## Evidence gathered / 已收集的证据
+## Upgrade regression (1.0.3, 2026-10-11) / 升级回归
+
+- 25 automated tests pass, including fixed-directory selection, byte-preserving legacy recovery, empty-profile recovery, current-data priority, isolated profiles, invalid/conflicting data, interrupted migration and concurrent edits.
+- `node scripts/check-upgrade.cjs` runs two real Electron sessions in an isolated appData directory. It changes cached default directories/application metadata and verifies recovery, saved edits, notes, stages, links, settings, completed/trash records and an unchanged legacy source.
+- The unchanged 1.0.2 main process fails this simulated default-directory-change scenario; 1.0.3 passes. This reproduces a failure mode, not proof of the cause of every reported missing-data incident.
+- Data format remains version 1; the UI, domain rules and Store save/backup behavior are unchanged.
+- The final 1.0.3 portable build succeeded, and packaged core/UI files match the current source. Separate local verification ran the actual 1.0.2 and moved/renamed 1.0.3 EXEs against the same isolated data copy and confirmed all stored fields remain unchanged. Private data and verification profiles are not published.
+
+- 25 项自动测试通过，新增覆盖固定目录、逐字节迁移、空目录恢复、现有数据优先、隔离目录、无效／冲突数据、中断迁移及并发修改。
+- `node scripts/check-upgrade.cjs` 在隔离 appData 目录中运行两次真实 Electron，会改变缓存默认目录／应用元信息，验证迁移、编辑持久化、笔记、阶段、资料、设置、已完成／回收站记录及旧源文件保留。
+- 未修改的 1.0.2 主进程在这个模拟默认目录改变的场景失败，1.0.3 通过。这复现了一种故障模式，不代表确认了每次缺失报告的具体原因。
+- 数据格式仍为 1，界面、领域规则及 Store 保存／备份行为不变。
+- 最终 1.0.3 可移植版构建成功，打包后的核心／界面文件与当前源码一致。另行本地验证使用同一隔离数据副本运行实际 1.0.2 与改名／移动后的 1.0.3 EXE，确认所有已存字段保持原样；私人数据及验证目录不公开。
+
+## Original 1.0.2 evidence / 原 1.0.2 验证证据
 
 - Baseline before repository preparation: 15/15 existing tests passed on Windows 11 Home x64 (10.0.26200), Node 22.23.2 and npm 10.9.8.
 - Real desktop smoke: passed with Electron 44.5.1 (embedded Node 24.21.0), using isolated synthetic data. The committed screenshot is captured by that run.
