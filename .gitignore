@@ -18,6 +18,7 @@ XEvent.exe
 events.json
 events.json.tmp
 backups/
+upgrade-recovery/
 .verification/
 .npm-cache/
 .electron-cache/
